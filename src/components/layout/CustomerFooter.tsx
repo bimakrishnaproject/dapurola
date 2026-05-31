@@ -9,7 +9,7 @@ export default function CustomerFooter() {
           <div className="md:col-span-2">
             <h3 className="font-heading text-2xl font-semibold text-brand-primary mb-4">Dapur Ola</h3>
             <p className="text-muted-foreground mb-6 max-w-sm">
-              Menyajikan bolu gulung, brownies, dan dessert pilihan yang dibikin fresh setiap hari. 
+              Menyajikan bolu gulung, brownies, dan dessert pilihan yang dibikin fresh setiap hari.
               Cocok banget buat nemenin waktu santai atau hadiah buat orang tersayang.
             </p>
             <div className="flex items-center gap-4">
@@ -27,8 +27,8 @@ export default function CustomerFooter() {
             <ul className="space-y-3">
               <li><Link href="/products" className="text-muted-foreground hover:text-brand-primary transition-colors">Menu Kami</Link></li>
               <li><Link href="/orders" className="text-muted-foreground hover:text-brand-primary transition-colors">Lacak Pesanan</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors">Cara Pesan</Link></li>
-              <li><Link href="#" className="text-muted-foreground hover:text-brand-primary transition-colors">Tanya Jawab (FAQ)</Link></li>
+              <li><Link href="/cara-pesan" className="text-muted-foreground hover:text-brand-primary transition-colors">Cara Pesan</Link></li>
+              <li><Link href="/faq" className="text-muted-foreground hover:text-brand-primary transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
@@ -38,14 +38,14 @@ export default function CustomerFooter() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
                 <span className="text-muted-foreground text-sm">
-                  Jl. Bahagia Raya No. 123,<br/>
+                  Jl. Bahagia Raya No. 123,<br />
                   Jakarta Selatan, 12345
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <MessageCircle className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
                 <span className="text-muted-foreground text-sm">
-                  WhatsApp: 0812-3456-7890<br/>
+                  WhatsApp: 0812-3456-7890<br />
                   (Senin - Sabtu, 08:00 - 17:00)
                 </span>
               </li>
@@ -55,7 +55,7 @@ export default function CustomerFooter() {
 
         <div className="pt-8 border-t border-brand-beige text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Dapur Ola. Dibuat dengan penuh cinta 🥰.
+            &copy; {new Date().getFullYear()} Dapur Ola. HAPPINESS IS HOMEMADE.
           </p>
         </div>
       </div>

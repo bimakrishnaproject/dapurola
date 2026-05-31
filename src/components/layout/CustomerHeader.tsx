@@ -13,6 +13,8 @@ const NAV_LINKS = [
   { href: "/", label: "Beranda" },
   { href: "/products", label: "Menu Kami" },
   { href: "/orders", label: "Lacak Pesanan" },
+  { href: "/cara-pesan", label: "Cara Pesan" },
+  { href: "/faq", label: "Tanya Jawab (FAQ)" },
 ];
 
 export default function CustomerHeader() {
