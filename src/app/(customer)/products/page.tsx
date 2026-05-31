@@ -5,13 +5,67 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 const CATEGORIES = ["Semua", "Bolu", "Brownies", "Donat", "Hampers"];
+
+function AnimatedAddToCartButton({ product, onAdd }: { product: any; onAdd: () => void }) {
+  const [isAdded, setIsAdded] = useState(false);
+
+  const handleClick = () => {
+    onAdd();
+    setIsAdded(true);
+    toast.success(`${product.name} ditambahkan ke keranjang!`);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  return (
+    <motion.button
+      whileTap={product.stock > 0 ? { scale: 0.95 } : {}}
+      onClick={handleClick}
+      disabled={product.stock === 0 || isAdded}
+      className={cn(
+        "w-full rounded-full text-white text-xs md:text-sm font-semibold h-8 md:h-10 flex items-center justify-center transition-colors relative overflow-hidden",
+        isAdded ? "bg-emerald-600 hover:bg-emerald-700" : "bg-brand-primary hover:bg-brand-secondary",
+        product.stock === 0 && "opacity-50 cursor-not-allowed"
+      )}
+    >
+      <AnimatePresence mode="wait">
+        {isAdded ? (
+          <motion.div
+            key="added"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center absolute"
+          >
+            <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+            Ditambahkan
+          </motion.div>
+        ) : (
+          <motion.div
+            key="add"
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            transition={{ duration: 0.2 }}
+            className="flex items-center absolute"
+          >
+            <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+            {product.stock === 0 ? "Habis" : "Pesan"}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
 
 function ProductsContent() {
   const { products, addToCart, toggleWishlist, wishlist } = useStore();
@@ -101,14 +155,10 @@ function ProductsContent() {
                 <span className="font-semibold text-brand-primary text-sm md:text-base">
                   Rp {product.price.toLocaleString("id-ID")}
                 </span>
-                <Button 
-                  className="w-full rounded-full bg-brand-primary hover:bg-brand-secondary text-white text-xs md:text-sm font-semibold h-8 md:h-10"
-                  onClick={() => addToCart(product, 1)}
-                  disabled={product.stock === 0}
-                >
-                  <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
-                  Pesan
-                </Button>
+                <AnimatedAddToCartButton 
+                  product={product} 
+                  onAdd={() => addToCart(product, 1)} 
+                />
               </div>
             </CardContent>
           </Card>
