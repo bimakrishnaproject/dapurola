@@ -7,7 +7,7 @@ export default function CustomerFooter() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           <div className="md:col-span-2">
-            <h3 className="font-heading text-2xl font-semibold text-brand-primary mb-4">Dapur Ola</h3>
+            <h3 className="font-heading text-2xl font-semibold text-brand-primary mb-4">DAPUR OLA</h3>
             <p className="text-muted-foreground mb-6 max-w-sm">
               Menyajikan bolu gulung, brownies, dan dessert pilihan yang dibikin fresh setiap hari.
               Cocok banget buat nemenin waktu santai atau hadiah buat orang tersayang.
@@ -55,7 +55,7 @@ export default function CustomerFooter() {
 
         <div className="pt-8 border-t border-brand-beige text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Dapur Ola. HAPPINESS IS HOMEMADE.
+            &copy; {new Date().getFullYear()} Dapur Ola.
           </p>
         </div>
       </div>

@@ -58,7 +58,7 @@ export default function HomePage() {
                   className: "h-14 px-8 text-lg font-bold rounded-full w-full sm:w-auto bg-[#F59E0B] hover:bg-[#D97706] text-[#2F6B52] shadow-lg hover:shadow-xl transition-all"
                 })}
               >
-                Lihat Menu Kami
+                Lihat Menu
               </Link>
               <Link
                 href="/products?category=hampers"
@@ -165,39 +165,6 @@ export default function HomePage() {
         </div>
         <div className="mt-8 text-center md:hidden">
           <Link href="/products" className={buttonVariants({ variant: "outline", className: "w-full rounded-full" })}>Lihat Semua Menu</Link>
-        </div>
-      </section>
-
-      {/* Brand Pillars / Value */}
-      <section className="bg-brand-beige py-20 mt-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-brand-primary mb-6 shadow-sm">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="font-heading font-semibold text-xl mb-3">Fresh dari Oven</h3>
-              <p className="text-muted-foreground">Pesananmu baru akan dibuat setelah konfirmasi pembayaran. Dijamin fresh!</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-brand-primary mb-6 shadow-sm">
-                <Gift className="w-8 h-8" />
-              </div>
-              <h3 className="font-heading font-semibold text-xl mb-3">Bisa Untuk Hampers</h3>
-              <p className="text-muted-foreground">Tersedia pilihan kartu ucapan dan pita cantik untuk dikirim ke orang tersayang.</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-brand-primary mb-6 shadow-sm">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="font-heading font-semibold text-xl mb-3">Pilih Tanggal Kirim</h3>
-              <p className="text-muted-foreground">Atur jadwal pengiriman sesukamu agar sampai di momen yang paling tepat.</p>
-            </div>
-          </div>
         </div>
       </section>
     </div>
