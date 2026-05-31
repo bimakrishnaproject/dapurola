@@ -79,6 +79,29 @@ export default function CustomerHeader() {
                   {link.label}
                 </Link>
               ))}
+              <Link 
+                href="/wishlist" 
+                className={cn(
+                  "text-lg font-medium transition-colors hover:text-primary flex items-center justify-between", 
+                  pathname === "/wishlist" ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                <span>Menu Favorit</span>
+                {wishlist.length > 0 && (
+                  <span className="bg-destructive text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+              <Link 
+                href="/profile" 
+                className={cn(
+                  "text-lg font-medium transition-colors hover:text-primary", 
+                  pathname === "/profile" ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                Profil Saya
+              </Link>
             </nav>
           </SheetContent>
         </Sheet>
@@ -114,7 +137,7 @@ export default function CustomerHeader() {
           <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(true)}>
             <Search className="h-5 w-5" />
           </Button>
-          <Link href="/wishlist">
+          <Link href="/wishlist" className="hidden sm:inline-flex">
             <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-primary">
               <Heart className="h-5 w-5" />
               {wishlist.length > 0 && (
@@ -122,7 +145,7 @@ export default function CustomerHeader() {
               )}
             </Button>
           </Link>
-          <Link href="/profile">
+          <Link href="/profile" className="hidden sm:inline-flex">
             <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <User className="h-5 w-5" />
             </Button>
