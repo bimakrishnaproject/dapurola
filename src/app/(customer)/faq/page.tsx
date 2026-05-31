@@ -1,6 +1,5 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function FAQPage() {
   return (
@@ -12,36 +11,56 @@ export default function FAQPage() {
       <h1 className="text-3xl font-heading font-semibold text-brand-primary mb-2">Tanya Jawab (FAQ)</h1>
       <p className="text-muted-foreground mb-8">Pertanyaan yang sering ditanyakan seputar layanan Dapur Ola.</p>
       
-      <div className="bg-white p-6 rounded-2xl border border-brand-beige shadow-sm">
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="item-1">
-            <AccordionTrigger className="text-left font-semibold text-brand-primary">Berapa lama proses pembuatan kue?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Untuk kue tart dan pesanan khusus (custom), kami membutuhkan waktu minimal 2-3 hari. Sedangkan untuk produk pastry harian (seperti bomboloni), bisa dikirim di hari yang sama jika stok tersedia.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-2">
-            <AccordionTrigger className="text-left font-semibold text-brand-primary">Apakah bisa request desain kue sendiri?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Tentu bisa! Anda dapat menghubungi admin kami melalui WhatsApp setelah melakukan pemesanan untuk mendiskusikan desain, warna, dan tulisan yang diinginkan.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-3">
-            <AccordionTrigger className="text-left font-semibold text-brand-primary">Metode pengiriman apa saja yang tersedia?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Saat ini kami menyediakan opsi pengiriman menggunakan kurir internal kami untuk menjaga kualitas kue, atau Anda bisa memilih opsi Ambil Sendiri (Pickup) di toko kami.
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="item-4">
-            <AccordionTrigger className="text-left font-semibold text-brand-primary">Bagaimana cara membatalkan pesanan?</AccordionTrigger>
-            <AccordionContent className="text-muted-foreground">
-              Pembatalan pesanan dapat dilakukan maksimal H-2 sebelum tanggal pengiriman. Silakan hubungi admin kami secepatnya untuk proses pembatalan.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+      <div className="bg-white p-6 rounded-2xl border border-brand-beige shadow-sm space-y-4">
+        
+        <details className="group [&_summary::-webkit-details-marker]:hidden border-b border-brand-beige pb-4">
+          <summary className="flex cursor-pointer items-center justify-between font-semibold text-brand-primary">
+            <span>Berapa lama proses pembuatan kue?</span>
+            <span className="transition group-open:rotate-180">
+              <ChevronDown className="w-5 h-5 text-brand-primary/50" />
+            </span>
+          </summary>
+          <div className="text-muted-foreground mt-4 leading-relaxed">
+            Untuk kue tart dan pesanan khusus (custom), kami membutuhkan waktu minimal 2-3 hari. Sedangkan untuk produk pastry harian (seperti bomboloni), bisa dikirim di hari yang sama jika stok tersedia.
+          </div>
+        </details>
+        
+        <details className="group [&_summary::-webkit-details-marker]:hidden border-b border-brand-beige pb-4">
+          <summary className="flex cursor-pointer items-center justify-between font-semibold text-brand-primary">
+            <span>Apakah bisa request desain kue sendiri?</span>
+            <span className="transition group-open:rotate-180">
+              <ChevronDown className="w-5 h-5 text-brand-primary/50" />
+            </span>
+          </summary>
+          <div className="text-muted-foreground mt-4 leading-relaxed">
+            Tentu bisa! Anda dapat menghubungi admin kami melalui WhatsApp setelah melakukan pemesanan untuk mendiskusikan desain, warna, dan tulisan yang diinginkan.
+          </div>
+        </details>
+        
+        <details className="group [&_summary::-webkit-details-marker]:hidden border-b border-brand-beige pb-4">
+          <summary className="flex cursor-pointer items-center justify-between font-semibold text-brand-primary">
+            <span>Metode pengiriman apa saja yang tersedia?</span>
+            <span className="transition group-open:rotate-180">
+              <ChevronDown className="w-5 h-5 text-brand-primary/50" />
+            </span>
+          </summary>
+          <div className="text-muted-foreground mt-4 leading-relaxed">
+            Saat ini kami menyediakan opsi pengiriman menggunakan kurir internal kami untuk menjaga kualitas kue, atau Anda bisa memilih opsi Ambil Sendiri (Pickup) di toko kami.
+          </div>
+        </details>
+        
+        <details className="group [&_summary::-webkit-details-marker]:hidden border-b border-brand-beige pb-4">
+          <summary className="flex cursor-pointer items-center justify-between font-semibold text-brand-primary">
+            <span>Bagaimana cara membatalkan pesanan?</span>
+            <span className="transition group-open:rotate-180">
+              <ChevronDown className="w-5 h-5 text-brand-primary/50" />
+            </span>
+          </summary>
+          <div className="text-muted-foreground mt-4 leading-relaxed">
+            Pembatalan pesanan dapat dilakukan maksimal H-2 sebelum tanggal pengiriman. Silakan hubungi admin kami secepatnya untuk proses pembatalan.
+          </div>
+        </details>
+
       </div>
     </main>
   );
