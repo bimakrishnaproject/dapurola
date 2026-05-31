@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Search, ShoppingBag, Heart, User, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
 import { useStore } from "@/store/useStore";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,21 +11,48 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/", label: "Beranda" },
   { href: "/products", label: "Menu Kami" },
   { href: "/orders", label: "Lacak Pesanan" },
-  { href: "/cara-pesan", label: "Cara Pesan" },
-  { href: "/faq", label: "Tanya Jawab (FAQ)" },
 ];
 
 export default function CustomerHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { cart, wishlist } = useStore();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/40">
+    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/40 relative">
+      {isSearchOpen && (
+        <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-md flex items-center px-4 md:px-8 shadow-sm">
+          <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2 max-w-3xl mx-auto h-full">
+            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+            <input 
+              type="text" 
+              placeholder="Cari bolu, brownies, hampers..." 
+              className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg px-2 h-full placeholder:text-muted-foreground/60"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => setIsSearchOpen(false)}>
+              <X className="h-5 w-5" />
+            </Button>
+          </form>
+        </div>
+      )}
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Mobile Menu */}
         <Sheet>
@@ -35,7 +63,7 @@ export default function CustomerHeader() {
           } />
           <SheetContent side="left" className="w-[85%] max-w-[320px] p-6">
             <SheetTitle className="text-left flex flex-col mb-6 border-b pb-4">
-              <span className="font-heading text-2xl text-primary">Dapur Ola</span>
+              <span className="font-heading text-2xl text-primary">DAPUR OLA</span>
               <span className="text-xs font-medium text-muted-foreground tracking-wide mt-0.5">HAPPINESS IS HOMEMADE</span>
             </SheetTitle>
             <nav className="flex flex-col gap-6 mt-4">
@@ -58,7 +86,7 @@ export default function CustomerHeader() {
         {/* Logo */}
         <Link href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:transform-none flex flex-col items-center lg:items-start justify-center">
           <span className="font-heading font-semibold text-2xl text-primary tracking-tight leading-none">
-            Dapur Ola
+            DAPUR OLA
           </span>
           <span className="text-[10px] font-medium text-muted-foreground tracking-widest mt-1">
             HAPPINESS IS HOMEMADE
@@ -83,7 +111,7 @@ export default function CustomerHeader() {
 
         {/* Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
-          <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-primary" onClick={() => toast.info("Fitur Pencarian akan segera hadir!")}>
+          <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(true)}>
             <Search className="h-5 w-5" />
           </Button>
           <Link href="/wishlist">

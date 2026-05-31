@@ -3,7 +3,8 @@
 import { useStore } from "@/store/useStore";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,21 +13,39 @@ import { cn } from "@/lib/utils";
 
 const CATEGORIES = ["Semua", "Bolu", "Brownies", "Donat", "Hampers"];
 
-export default function ProductsPage() {
+function ProductsContent() {
   const { products, addToCart, toggleWishlist, wishlist } = useStore();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
   const [activeCategory, setActiveCategory] = useState("Semua");
-
-  const filteredProducts = activeCategory === "Semua" 
-    ? products 
-    : products.filter(p => p.category === activeCategory);
+  
+  const filteredProducts = products.filter(p => {
+    const matchesCategory = activeCategory === "Semua" || p.category === activeCategory;
+    const matchesQuery = !query || 
+      p.name.toLowerCase().includes(query.toLowerCase()) || 
+      p.description?.toLowerCase().includes(query.toLowerCase());
+      
+    return matchesCategory && matchesQuery;
+  });
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-2xl mx-auto text-center mb-12">
-        <h1 className="text-4xl font-heading font-semibold text-brand-primary mb-4">Menu Kami</h1>
-        <p className="text-muted-foreground text-lg">
-          Belum tau mau pilih yang mana? Tenang, semua enak kok 😆
-        </p>
+        {query ? (
+          <>
+            <h1 className="text-4xl font-heading font-semibold text-brand-primary mb-4">Hasil Pencarian</h1>
+            <p className="text-muted-foreground text-lg">
+              Menampilkan menu untuk "{query}"
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 className="text-4xl font-heading font-semibold text-brand-primary mb-4">Menu Kami</h1>
+            <p className="text-muted-foreground text-lg">
+              Belum tau mau pilih yang mana? Tenang, semua enak kok 😆
+            </p>
+          </>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
@@ -100,12 +119,28 @@ export default function ProductsPage() {
       
       {filteredProducts.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-muted-foreground text-lg mb-4">Wah, menu {activeCategory} lagi kosong nih 😢</p>
-          <Button variant="outline" className="rounded-full" onClick={() => setActiveCategory("Semua")}>
+          <p className="text-muted-foreground text-lg mb-4">
+            Wah, {query ? `kami tidak menemukan menu untuk "${query}" 😢` : `menu ${activeCategory} lagi kosong nih 😢`}
+          </p>
+          <Button variant="outline" className="rounded-full" onClick={() => {
+            setActiveCategory("Semua");
+            if (query) {
+              window.history.pushState({}, '', '/products');
+              window.location.reload();
+            }
+          }}>
             Lihat Semua Menu
           </Button>
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-20 text-center text-muted-foreground">Memuat menu...</div>}>
+      <ProductsContent />
+    </Suspense>
   );
 }
