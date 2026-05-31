@@ -26,7 +26,7 @@ export default function ProfilePage() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
         <div className="md:col-span-1">
-          <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm overflow-hidden bg-white">
+          <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm overflow-hidden bg-white p-0 gap-0">
             <div className="bg-brand-cream py-4 flex flex-col items-center justify-center text-center border-b border-brand-beige">
               <div className="w-14 h-14 bg-brand-primary text-white rounded-full flex items-center justify-center text-2xl font-heading font-semibold mb-2">
                 {user.name.charAt(0)}
@@ -54,7 +54,7 @@ export default function ProfilePage() {
 
         <div className="md:col-span-2 space-y-3 md:space-y-6">
           <div className="grid grid-cols-2 gap-3 md:gap-6">
-            <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm bg-brand-light/40">
+            <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm bg-brand-light/40 p-0 gap-0 flex items-center justify-center">
               <CardContent className="p-3 md:p-6 flex flex-col items-center justify-center text-center">
                 <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center text-brand-primary shadow-sm mb-2 md:mb-4">
                   <Package className="w-4 h-4 md:w-6 md:h-6" />
@@ -64,7 +64,7 @@ export default function ProfilePage() {
                 <Link href="/orders" className="text-brand-primary text-[11px] md:text-sm font-semibold hover:underline mt-1 md:mt-2">Lihat Riwayat</Link>
               </CardContent>
             </Card>
-            <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm bg-brand-pink/40">
+            <Card className="rounded-2xl md:rounded-3xl border-transparent shadow-sm bg-brand-pink/40 p-0 gap-0 flex items-center justify-center">
               <CardContent className="p-3 md:p-6 flex flex-col items-center justify-center text-center">
                 <div className="w-8 h-8 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center text-destructive shadow-sm mb-2 md:mb-4">
                   <Heart className="w-4 h-4 md:w-6 md:h-6" />
