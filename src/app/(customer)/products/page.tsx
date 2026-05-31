@@ -97,20 +97,18 @@ function ProductsContent() {
                   <h3 className="font-heading font-medium text-sm md:text-lg text-foreground mb-1 md:mb-2 line-clamp-2 md:line-clamp-1 leading-snug">{product.name}</h3>
                 </Link>
               </div>
-              <div className="flex items-center justify-between mt-3 md:mt-4">
+              <div className="flex flex-col gap-2 mt-3 md:mt-4">
                 <span className="font-semibold text-brand-primary text-sm md:text-base">
                   Rp {product.price.toLocaleString("id-ID")}
                 </span>
-                <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
-                  <Button 
-                    size="icon" 
-                    className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white shrink-0"
-                    onClick={() => addToCart(product, 1)}
-                    disabled={product.stock === 0}
-                  >
-                    <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
-                  </Button>
-                </div>
+                <Button 
+                  className="w-full rounded-full bg-brand-primary hover:bg-brand-secondary text-white text-xs md:text-sm font-semibold h-8 md:h-10"
+                  onClick={() => addToCart(product, 1)}
+                  disabled={product.stock === 0}
+                >
+                  <ShoppingBag className="w-3.5 h-3.5 md:w-4 md:h-4 mr-1.5 md:mr-2" />
+                  Pesan
+                </Button>
               </div>
             </CardContent>
           </Card>

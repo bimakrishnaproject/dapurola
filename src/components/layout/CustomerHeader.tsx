@@ -123,7 +123,7 @@ export default function CustomerHeader() {
             </Button>
           </Link>
           <Link href="/profile">
-            <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-primary">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
               <User className="h-5 w-5" />
             </Button>
           </Link>
