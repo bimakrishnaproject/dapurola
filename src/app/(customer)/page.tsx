@@ -20,41 +20,56 @@ export default function HomePage() {
   return (
     <div className="flex flex-col gap-16 pb-16">
       {/* Hero Section */}
-      <section className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center bg-brand-cream overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image 
-            src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/YbNB1g3BWzTZJ42y/whatsapp-image-2025-03-18-at-16.11.50_74b96e1c-YleWee67obIEVjpj.jpg" 
-            alt="Dapur Ola Bakery"
-            fill
-            className="object-cover opacity-20"
-            priority
-          />
-        </div>
+      <section className="relative w-full min-h-[80vh] flex items-center justify-center bg-[#2F6B52] overflow-hidden py-20">
         <div className="container relative z-10 mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl mx-auto flex flex-col items-center"
+            className="max-w-4xl mx-auto flex flex-col items-center"
           >
-            <Badge className="bg-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/30 border-none mb-6 text-sm px-4 py-1.5">
-              ⭐ Homemade Dengan Bahan Premium
-            </Badge>
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading font-semibold text-brand-primary mb-6 leading-tight">
-              Lagi ngidam yang <br/>
-              <span className="text-brand-brown relative">
-                manis-manis? 🍩
-                <svg className="absolute -bottom-2 left-0 w-full h-3 text-brand-secondary/40" viewBox="0 0 100 20" preserveAspectRatio="none">
-                  <path d="M0 10 Q 50 20 100 10" fill="transparent" stroke="currentColor" strokeWidth="4" />
-                </svg>
-              </span>
+            {/* Quote Icon */}
+            <div className="mb-6 md:mb-10 text-[#F59E0B]">
+              <svg
+                className="w-16 h-16 md:w-24 md:h-24 mx-auto fill-current"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+              </svg>
+            </div>
+
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-heading font-black text-white mb-8 leading-[1.1] tracking-wide uppercase">
+              Nggak Laper, <br />
+              Cuma Pengen <br />
+              Ngemil Aja
             </h1>
-            <p className="text-lg md:text-2xl text-muted-foreground mb-8 max-w-2xl">
-              Dibikin fresh setelah kamu pesan. Cocok buat hadiah, acara keluarga, atau buat nemenin ngopi sore.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Link href="/products" className={buttonVariants({ size: "lg", className: "h-14 px-8 text-lg rounded-full w-full sm:w-auto" })}>Lihat Menu Kami</Link>
-              <Link href="/products?category=hampers" className={buttonVariants({ variant: "outline", size: "lg", className: "h-14 px-8 text-lg rounded-full w-full sm:w-auto bg-white/50 backdrop-blur-sm border-brand-primary/20 text-brand-primary hover:bg-white/80" })}>Pesan Hampers <Gift className="w-5 h-5 ml-2" /></Link>
+
+            {/* Yellow Separator */}
+            <div className="w-24 h-1.5 md:h-2 bg-[#F59E0B] rounded-full mb-8 md:mb-10"></div>
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <Link
+                href="/products"
+                className={buttonVariants({
+                  size: "lg",
+                  className: "h-14 px-8 text-lg font-bold rounded-full w-full sm:w-auto bg-[#F59E0B] hover:bg-[#D97706] text-[#2F6B52] shadow-lg hover:shadow-xl transition-all"
+                })}
+              >
+                Lihat Menu Kami
+              </Link>
+              <Link
+                href="/products?category=hampers"
+                className={buttonVariants({
+                  variant: "outline",
+                  size: "lg",
+                  className: "h-14 px-8 text-lg font-bold rounded-full w-full sm:w-auto bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#2F6B52] transition-all"
+                })}
+              >
+                Pesan Hampers <Gift className="w-5 h-5 ml-2" />
+              </Link>
             </div>
           </motion.div>
         </div>
@@ -109,7 +124,7 @@ export default function HomePage() {
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <button 
+                <button
                   onClick={() => toggleWishlist(product.id)}
                   className="absolute top-2 right-2 md:top-3 md:right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm text-muted-foreground hover:text-destructive transition-colors shadow-sm z-10"
                 >
@@ -135,8 +150,8 @@ export default function HomePage() {
                     Rp {product.price.toLocaleString("id-ID")}
                   </span>
                   <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
-                    <Button 
-                      size="icon" 
+                    <Button
+                      size="icon"
                       className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-brand-light text-brand-primary hover:bg-brand-primary hover:text-white shrink-0"
                       onClick={() => addToCart(product, 1)}
                     >
