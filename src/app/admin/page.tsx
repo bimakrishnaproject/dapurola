@@ -21,8 +21,7 @@ export default function AdminDashboard() {
   // Mock production counts based on date
   const getOrdersCountForDate = (date: Date) => {
     const dateStr = format(date, "yyyy-MM-dd");
-    return orders.filter(o => o.deliveryDate === dateStr).length || Math.floor(Math.random() * 20) + 5; 
-    // Random fallback just to show UI if no orders match the date
+    return orders.filter(o => o.deliveryDate === dateStr).length || 0; 
   };
 
   return (
