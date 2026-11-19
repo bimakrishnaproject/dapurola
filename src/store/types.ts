@@ -5,6 +5,7 @@ export type Product = {
   name: string;
   slug: string;
   description: string;
+  shortDescription?: string;
   price: number;
   category: string;
   stock: number;
@@ -14,6 +15,13 @@ export type Product = {
   shelfLife: string;
   storageInstructions: string;
   isActive: boolean;
+  // Commissary Board Data (Casual & Authentic)
+  codeNumber?: string; // e.g. "#01", "#02"
+  portionWeight?: string; // e.g. "540g (Panjang 24cm)"
+  tasteProfile?: string; // e.g. "Gurih mentega tebal, gak bikin eneg"
+  prepStatus?: string; // e.g. "Ready • Langsung bungkus"
+  remainingPortion?: number; // e.g. 7
+  servingAdvice?: string; // e.g. "Makin mantap dimakan pas dingin"
 };
 
 export type CartItem = {
@@ -23,14 +31,20 @@ export type CartItem = {
 };
 
 export type OrderStatus =
+  // Operational Kitchen States (POS & KDS)
+  | "Pesanan Masuk"
+  | "Lagi Dimasak"
+  | "Siap Di-pickup / Kirim"
+  | "Selesai"
+  | "Dibatalkan"
+  // Legacy / Storefront compatibility
   | "Menunggu Pembayaran"
   | "Sudah Dibayar"
   | "Dikonfirmasi"
   | "Lagi Dibikin 🥰"
   | "Siap Dikirim 🚚"
   | "Dalam Perjalanan"
-  | "Selesai 🎉"
-  | "Dibatalkan";
+  | "Selesai 🎉";
 
 export type Order = {
   id: string;
@@ -53,6 +67,10 @@ export type Banner = {
   id: string;
   title: string;
   subtitle: string;
+  badge?: string;
+  code?: string;
+  discountText?: string;
+  link?: string;
   image?: string;
   isActive: boolean;
 };

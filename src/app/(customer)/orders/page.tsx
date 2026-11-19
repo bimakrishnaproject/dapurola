@@ -3,84 +3,145 @@
 import { useStore } from "@/store/useStore";
 import Link from "next/link";
 import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
-import { Package, ChevronRight } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { id as localeId } from "date-fns/locale";
+import { ArrowRight, Package, ChevronRight, ChevronLeft } from "lucide-react";
+import Image from "next/image";
+
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  "Pesanan Masuk": { label: "Pesanan Masuk", color: "bg-amber-50 text-amber-900 border-amber-200" },
+  "Lagi Dimasak": { label: "Lagi Dimasak", color: "bg-purple-50 text-purple-900 border-purple-200" },
+  "Siap Di-pickup / Kirim": { label: "Siap Kirim", color: "bg-blue-50 text-blue-900 border-blue-200" },
+  "Selesai": { label: "Selesai (Beres)", color: "bg-emerald-50 text-emerald-900 border-emerald-200" },
+  Pending: { label: "Menunggu Konfirmasi", color: "bg-amber-50 text-amber-900 border-amber-200" },
+  Confirmed: { label: "Dapur Mulai Nyiapin", color: "bg-blue-50 text-blue-900 border-blue-200" },
+  Baking: { label: "Lagi Dipanggang Fresh", color: "bg-purple-50 text-purple-900 border-purple-200" },
+  "Ready for Delivery": { label: "Siap Kirim", color: "bg-blue-50 text-blue-900 border-blue-200" },
+  "Out for Delivery": { label: "Kurir Meluncur", color: "bg-emerald-600 text-white border-emerald-600" },
+  Delivered: { label: "Sudah Diterima", color: "bg-stone-100 text-stone-800 border-stone-200" },
+  Cancelled: { label: "Dibatalkan", color: "bg-rose-50 text-rose-800 border-rose-200" },
+};
 
 export default function OrdersPage() {
   const { orders } = useStore();
 
   if (orders.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
-        <div className="w-20 h-20 bg-brand-light rounded-full flex items-center justify-center mb-6">
-          <Package className="w-10 h-10 text-brand-primary" />
+      <div className="container mx-auto px-4 md:px-8 py-24 flex flex-col items-center justify-center text-center font-jakarta">
+        <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mb-6 text-stone-400">
+          <Package strokeWidth={1.5} className="w-8 h-8" />
         </div>
-        <h1 className="text-xl md:text-2xl font-heading font-semibold text-brand-primary mb-3">Belum Ada Pesanan</h1>
-        <p className="text-muted-foreground text-base md:text-lg mb-8">Wah, kamu belum pernah pesan Dapur Ola nih.</p>
-        <Link href="/products" className="inline-flex items-center justify-center rounded-full bg-brand-primary text-white h-11 px-6 text-base font-medium hover:bg-brand-secondary transition-colors">
-          Mulai Belanja
+        <span className="text-xs uppercase tracking-wider text-amber-800 font-semibold mb-2">
+          Riwayat Belanja Kosong
+        </span>
+        <h1 className="font-playfair text-2xl sm:text-4xl font-bold text-[#1B4332] mb-3">
+          Belum Ada Pesanan yang Dibuat
+        </h1>
+        <p className="text-xs sm:text-sm text-stone-500 max-w-sm mb-8 leading-relaxed font-normal">
+          Yuk cobain bolu gulung lembut, brownies fudgy premium, atau donat kampung favoritmu sekarang!
+        </p>
+        <Link
+          href="/#menu-list"
+          className="px-8 py-3.5 bg-[#1B4332] text-white text-xs font-semibold rounded-full hover:bg-[#143225] transition-all shadow-xs cursor-pointer active:scale-95"
+        >
+          Lihat Menu Jajan Sekarang →
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-3xl">
-      <h1 className="text-3xl font-heading font-semibold text-brand-primary mb-6">Riwayat Pesanan</h1>
-      
-      <div className="space-y-4">
-        {orders.map((order) => {
-          const isDone = order.status === "Selesai 🎉";
-          
-          return (
-            <Link key={order.id} href={`/orders/${order.id}`} className="block group">
-              <div className="py-5 border-b border-brand-beige last:border-0 hover:bg-brand-cream/20 transition-colors rounded-xl px-2 sm:px-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <p className="font-heading font-semibold text-brand-primary text-base sm:text-lg">{order.id}</p>
-                      <Badge className={
-                        isDone 
-                          ? "bg-green-100 text-green-700 border-none px-2 py-0.5 text-xs font-medium" 
-                          : "bg-brand-light text-brand-primary border-none px-2 py-0.5 text-xs font-medium"
-                      }>
-                        {order.status}
-                      </Badge>
+    <div className="w-full bg-[#FAF7F2] text-stone-900 min-h-screen pb-24 font-jakarta">
+      {/* Top Banner */}
+      <div className="border-b border-stone-200 py-8 sm:py-12 bg-[#F5EFE6]">
+        <div className="container mx-auto px-4 md:px-8 max-w-4xl">
+          <Link
+            href="/#menu-list"
+            className="inline-flex items-center gap-1.5 text-xs text-stone-500 hover:text-stone-900 mb-3 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Kembali ke Menu Utama</span>
+          </Link>
+          <span className="text-[10px] uppercase tracking-widest text-amber-800 font-semibold block mb-1">
+            Status Pemesanan Online
+          </span>
+          <h1 className="font-playfair text-2xl sm:text-4xl font-bold text-[#1B4332]">
+            Pesanan Saya
+          </h1>
+          <p className="text-xs sm:text-sm text-stone-600 mt-1.5">
+            Pantau proses penyiapan di dapur dan jadwal kirim kurir secara langsung.
+          </p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-3 sm:px-6 md:px-8 pt-6 sm:pt-10 max-w-4xl">
+        {/* "KARTU DIBUKA DI MOBILE": Borderless on mobile, rounded container on desktop */}
+        <div className="bg-white sm:rounded-3xl sm:border sm:border-stone-200/80 divide-y divide-stone-100 overflow-hidden shadow-xs">
+          {orders.map((order) => {
+            const statusConfig = STATUS_LABELS[order.status] || {
+              label: order.status,
+              color: "bg-stone-100 text-stone-800 border-stone-200",
+            };
+
+            return (
+              <Link
+                key={order.id}
+                href={`/orders/${order.id}`}
+                className="group p-4 sm:p-6 block hover:bg-stone-50/60 transition-colors"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-xs flex-wrap">
+                      <span className="font-bold text-stone-900 text-sm">
+                        #{order.id}
+                      </span>
+                      <span className={`px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${statusConfig.color}`}>
+                        {statusConfig.label}
+                      </span>
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                      {format(new Date(order.createdAt), "dd MMMM yyyy, HH:mm", { locale: idLocale })}
+
+                    <p className="text-xs text-stone-500">
+                      Dipesan: {format(new Date(order.createdAt), "dd MMM yyyy, HH:mm", { locale: localeId })} WIB • {order.deliveryOption}
                     </p>
-                    
-                    <div className="flex items-center gap-3">
+
+                    {/* Image Previews */}
+                    <div className="flex items-center gap-3 pt-1">
                       <div className="flex -space-x-2">
-                        {order.items.slice(0, 3).map(item => (
-                          <div key={item.product.id} className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white bg-brand-cream shrink-0">
-                            <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                        {order.items.slice(0, 3).map((item) => (
+                          <div
+                            key={item.product.id}
+                            className="relative w-10 h-10 rounded-full border-2 border-white bg-stone-100 overflow-hidden shadow-xs"
+                          >
+                            <Image
+                              src={item.product.image}
+                              alt={item.product.name}
+                              fill
+                              className="object-cover"
+                            />
                           </div>
                         ))}
-                        {order.items.length > 3 && (
-                          <div className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-light flex items-center justify-center text-xs font-medium text-brand-primary border-2 border-white z-10">
-                            +{order.items.length - 3}
-                          </div>
-                        )}
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-brand-primary">{order.items.length} Barang</p>
-                        <p className="text-xs text-muted-foreground">Total: Rp {order.total.toLocaleString("id-ID")}</p>
-                      </div>
+                      <span className="text-xs text-stone-700 truncate max-w-[240px] sm:max-w-md">
+                        {order.items.map((i) => `${i.quantity}x ${i.product.name}`).join(", ")}
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center text-brand-secondary font-medium text-sm mt-2 sm:mt-0 group-hover:underline">
-                    Lihat Detail <ChevronRight className="w-4 h-4 ml-1" />
+
+                  <div className="flex items-center justify-between sm:justify-end gap-4 pt-2 sm:pt-0 border-t sm:border-t-0 border-stone-100">
+                    <div className="text-left sm:text-right">
+                      <span className="text-[10px] text-stone-400 block uppercase">
+                        Total Belanja
+                      </span>
+                      <span className="text-sm sm:text-base font-bold text-stone-900">
+                        Rp {order.total.toLocaleString("id-ID")}
+                      </span>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-stone-400 group-hover:text-emerald-700 group-hover:translate-x-1 transition-all" />
                   </div>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

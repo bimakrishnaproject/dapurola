@@ -1,214 +1,174 @@
 "use client";
 
 import { useStore } from "@/store/useStore";
-import { useParams, notFound } from "next/navigation";
+import { useParams, notFound, useRouter } from "next/navigation";
 import Image from "next/image";
-import { format } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
-import { CheckCircle2, Circle, Clock, ChefHat, Truck, Home, MapPin, Phone, User } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { OrderStatus } from "@/store/types";
-import { toast } from "sonner";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
-const STATUS_STEPS = [
-  "Menunggu Pembayaran",
-  "Sudah Dibayar",
-  "Dikonfirmasi",
-  "Lagi Dibikin 🥰",
-  "Siap Dikirim 🚚",
-  "Dalam Perjalanan",
-  "Selesai 🎉"
-];
-
-const STATUS_ICONS: Record<string, React.ReactNode> = {
-  "Menunggu Pembayaran": <Clock className="w-5 h-5" />,
-  "Sudah Dibayar": <CheckCircle2 className="w-5 h-5" />,
-  "Dikonfirmasi": <CheckCircle2 className="w-5 h-5" />,
-  "Lagi Dibikin 🥰": <ChefHat className="w-5 h-5" />,
-  "Siap Dikirim 🚚": <PackageIcon className="w-5 h-5" />,
-  "Dalam Perjalanan": <Truck className="w-5 h-5" />,
-  "Selesai 🎉": <Home className="w-5 h-5" />,
-  "Dibatalkan": <Clock className="w-5 h-5" /> // fallback
-};
-
-function PackageIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-  )
-}
+import { format } from "date-fns";
+import { id as localeId } from "date-fns/locale";
+import { ArrowLeft, Printer, Check, Clock, User, Phone, MapPin, Truck, AlertCircle } from "lucide-react";
+import KitchenOperationsBar from "@/components/admin/KitchenOperationsBar";
+import DailySnapshotDock from "@/components/admin/DailySnapshotDock";
+import { playKitchenDing } from "@/components/admin/audioChime";
+import { toast } from "sonner";
 
 export default function AdminOrderDetailPage() {
   const { id } = useParams() as { id: string };
-  const { orders, updateOrderStatus } = useStore();
+  const { orders, updateOrderStatus, isAudioAlertEnabled } = useStore();
+  const router = useRouter();
 
-  const order = orders.find(o => o.id === id);
+  const order = orders.find((o) => o.id === id);
 
   if (!order) {
     return notFound();
   }
 
-  const handleStatusChange = (newStatus: OrderStatus) => {
-    updateOrderStatus(order.id, newStatus);
-    toast.success("Status Diperbarui", {
-      description: `Pesanan ${order.id} diubah menjadi ${newStatus}.`,
-    });
+  const handlePrint = () => {
+    window.print();
   };
 
-  const currentStepIndex = STATUS_STEPS.indexOf(order.status);
-  const isCancelled = order.status === "Dibatalkan";
+  const advanceStatus = () => {
+    let nextStatus: any = "Lagi Dimasak";
+    if (order.status === "Pesanan Masuk" || order.status === "Menunggu Pembayaran") {
+      nextStatus = "Lagi Dimasak";
+    } else if (order.status === "Lagi Dimasak") {
+      nextStatus = "Siap Di-pickup / Kirim";
+    } else if (order.status === "Siap Di-pickup / Kirim") {
+      nextStatus = "Selesai";
+    }
+
+    updateOrderStatus(order.id, nextStatus);
+    if (isAudioAlertEnabled) playKitchenDing();
+    toast.success(`Status Order #${order.id} Diperbarui: ${nextStatus}`);
+  };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-4">
-        <div>
-          <Link href="/admin/orders" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-brand-primary mb-4">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Kembali ke Daftar Pesanan
-          </Link>
-          <h1 className="text-3xl font-heading font-semibold text-brand-primary mb-2">Detail Pesanan</h1>
-          <p className="text-muted-foreground">Order ID: {order.id}</p>
-        </div>
-        <div className="w-full sm:w-[250px]">
-          <label className="text-sm font-medium text-muted-foreground mb-1.5 block">Ubah Status Pesanan</label>
-          <Select 
-            value={order.status} 
-            onValueChange={(val: string | null) => val && handleStatusChange(val as OrderStatus)}
+    <div className="min-h-screen flex flex-col justify-between bg-[#0D0F12] text-[#F4F4F5]">
+      <KitchenOperationsBar />
+
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-4xl w-full mx-auto space-y-6">
+        {/* Back Link & Header */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors"
           >
-            <SelectTrigger className="w-full bg-white rounded-xl h-11 border-brand-primary/20">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {STATUS_STEPS.concat(["Dibatalkan"]).map((status) => (
-                <SelectItem key={status} value={status}>{status}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <ArrowLeft strokeWidth={1.5} className="w-4 h-4" />
+            <span>Kembali ke KDS</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="h-11 px-4 bg-white text-black font-mono text-xs uppercase font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+            >
+              <Printer strokeWidth={1.5} className="w-4 h-4" />
+              <span>Cetak Struk Thermal</span>
+            </button>
+            <button
+              onClick={advanceStatus}
+              className="h-11 px-5 bg-[#246B4E] hover:bg-emerald-600 text-white font-mono text-xs uppercase font-bold flex items-center gap-1.5 active:scale-95 transition-all"
+            >
+              <Check strokeWidth={2} className="w-4 h-4" />
+              <span>Lanjut Status</span>
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Tracker & Items */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Tracker */}
-          <Card className="p-6 sm:p-8 border-transparent shadow-sm bg-white rounded-3xl">
-            <h2 className="text-xl font-heading font-semibold text-brand-primary mb-8">Status Pesanan</h2>
-            
-            {isCancelled ? (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium">
-                Pesanan Dibatalkan
-              </div>
-            ) : (
-              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-brand-beige">
-                {STATUS_STEPS.map((step, index) => {
-                  const isCompleted = index < currentStepIndex;
-                  const isCurrent = index === currentStepIndex;
-                  const isFuture = index > currentStepIndex;
+        {/* Thermal Slip Card */}
+        <div className="border border-neutral-800 bg-[#16181D] p-6 sm:p-8 space-y-6">
+          <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+            <div>
+              <span className="font-mono text-xs uppercase text-[#246B4E] font-bold block">
+                TIKET OPERASIONAL
+              </span>
+              <h1 className="font-mono text-2xl font-bold text-white mt-1">
+                #{order.id}
+              </h1>
+            </div>
+            <span className="px-3 py-1 font-mono text-xs font-bold uppercase bg-amber-950 text-amber-300 border border-amber-500/50">
+              {order.status}
+            </span>
+          </div>
 
-                  return (
-                    <div key={step} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-brand-light shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10"
-                           style={{ backgroundColor: isCompleted || isCurrent ? '#2F6B52' : '#F5EFE6', color: isCompleted || isCurrent ? '#fff' : '#6B7280' }}>
-                        {STATUS_ICONS[step]}
-                      </div>
-                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-2xl border border-brand-beige shadow-sm">
-                        <div className="flex items-center justify-between space-x-2 mb-1">
-                          <div className={`font-bold text-sm ${isCurrent ? 'text-brand-primary' : isFuture ? 'text-muted-foreground' : 'text-foreground'}`}>{step}</div>
-                        </div>
-                        {isCurrent && <div className="text-xs text-brand-secondary">Status saat ini</div>}
-                      </div>
+          {/* Customer & Logistics Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-xs bg-black/40 p-4 border border-neutral-800">
+            <div>
+              <span className="text-neutral-500 text-[10px] uppercase block">
+                PELANGGAN
+              </span>
+              <span className="font-bold text-white text-sm block mt-0.5">
+                {order.customerName}
+              </span>
+              <span className="text-neutral-400">{order.customerPhone}</span>
+            </div>
+            <div>
+              <span className="text-neutral-500 text-[10px] uppercase block">
+                METODE PENGIRIMAN
+              </span>
+              <span className="font-bold text-emerald-400 text-sm block mt-0.5">
+                {order.deliveryOption}
+              </span>
+              <span className="text-neutral-400">
+                {format(new Date(order.createdAt), "dd MMMM yyyy, HH:mm", { locale: localeId })} WIB
+              </span>
+            </div>
+            <div className="sm:col-span-2 pt-2 border-t border-neutral-800">
+              <span className="text-neutral-500 text-[10px] uppercase block">
+                ALAMAT LENGKAP PENGIRIMAN
+              </span>
+              <span className="font-sans text-xs text-neutral-300 block mt-0.5 leading-relaxed">
+                {order.address}
+              </span>
+            </div>
+          </div>
+
+          {/* Menu Items */}
+          <div className="space-y-3">
+            <span className="font-mono text-xs uppercase tracking-wider font-bold text-neutral-400 block">
+              DAFTAR PESANAN
+            </span>
+
+            <div className="divide-y divide-neutral-800 border border-neutral-800 bg-[#121417]">
+              {order.items.map((item, idx) => (
+                <div key={idx} className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 bg-white text-black font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                      {item.quantity}x
+                    </span>
+                    <div>
+                      <h4 className="font-cinzel text-sm font-bold text-white">
+                        {item.product.name}
+                      </h4>
+                      <p className="font-mono text-[11px] text-neutral-400">
+                        Rp {item.product.price.toLocaleString("id-ID")} per porsi
+                      </p>
+                      {item.notes && (
+                        <p className="font-sans text-xs text-amber-300 bg-amber-950/60 border border-amber-500/40 px-2 py-0.5 mt-1 inline-block">
+                          Catatan: {item.notes}
+                        </p>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-
-          {/* Order Items */}
-          <Card className="p-6 sm:p-8 border-transparent shadow-sm bg-white rounded-3xl">
-            <h2 className="text-xl font-heading font-semibold text-brand-primary mb-6">Barang Belanjaan</h2>
-            <div className="space-y-6">
-              {order.items.map(item => (
-                <div key={item.product.id} className="flex gap-4">
-                  <div className="relative w-20 h-20 rounded-xl overflow-hidden bg-brand-cream border border-brand-beige shrink-0">
-                    <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-heading font-medium text-foreground">{item.product.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{item.quantity} x Rp {item.product.price.toLocaleString("id-ID")}</p>
-                    {item.notes && <p className="text-xs mt-2 bg-brand-light/50 p-2 rounded-lg text-muted-foreground">Catatan: {item.notes}</p>}
-                  </div>
-                  <div className="font-semibold text-brand-primary">
+                  <div className="font-mono text-sm font-bold text-white">
                     Rp {(item.product.price * item.quantity).toLocaleString("id-ID")}
                   </div>
                 </div>
               ))}
             </div>
+          </div>
 
-            <Separator className="my-6 bg-brand-beige" />
-
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between text-muted-foreground">
-                <span>Subtotal Barang</span>
-                <span>Rp {(order.total - (order.deliveryOption === "Pickup" ? 0 : 25000)).toLocaleString("id-ID")}</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Ongkos Kirim</span>
-                <span>{order.deliveryOption === "Pickup" ? "Gratis" : "Rp 25.000"}</span>
-              </div>
-              <div className="flex justify-between font-bold text-lg text-brand-primary pt-3 border-t border-brand-beige">
-                <span>Total Belanja</span>
-                <span>Rp {order.total.toLocaleString("id-ID")}</span>
-              </div>
-            </div>
-          </Card>
+          {/* Totals */}
+          <div className="flex justify-between items-center pt-4 border-t border-neutral-800 font-mono">
+            <span className="text-xs uppercase text-neutral-400">TOTAL PEMBAYARAN</span>
+            <span className="text-xl font-bold text-white">
+              Rp {order.total.toLocaleString("id-ID")}
+            </span>
+          </div>
         </div>
+      </main>
 
-        {/* Right Column: Info */}
-        <div className="space-y-6">
-          <Card className="p-6 border-transparent shadow-sm bg-brand-cream/30 rounded-3xl">
-            <h3 className="font-heading font-semibold text-brand-primary mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5" /> Info Pengiriman
-            </h3>
-            <div className="space-y-4 text-sm">
-              <div>
-                <p className="text-muted-foreground mb-1">Metode</p>
-                <p className="font-medium text-foreground">{order.deliveryOption}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">Jadwal</p>
-                <p className="font-medium text-foreground">{format(new Date(order.deliveryDate), "dd MMMM yyyy", { locale: idLocale })} - {order.deliveryTimeSlot}</p>
-              </div>
-              {order.deliveryOption !== "Pickup" && (
-                <div>
-                  <p className="text-muted-foreground mb-1">Alamat</p>
-                  <p className="font-medium text-foreground">{order.address}</p>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          <Card className="p-6 border-transparent shadow-sm bg-brand-cream/30 rounded-3xl">
-            <h3 className="font-heading font-semibold text-brand-primary mb-4 flex items-center gap-2">
-              <User className="w-5 h-5" /> Info Pemesan
-            </h3>
-            <div className="space-y-4 text-sm">
-              <div>
-                <p className="text-muted-foreground mb-1">Nama</p>
-                <p className="font-medium text-foreground">{order.customerName}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">Nomor HP</p>
-                <p className="font-medium text-foreground">{order.customerPhone}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-      </div>
+      <DailySnapshotDock />
     </div>
   );
 }

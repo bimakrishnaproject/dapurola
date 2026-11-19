@@ -1,12 +1,18 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { Product, CartItem, Order, Banner, CustomerUser, Role, OrderStatus } from "./types";
-import { mockProducts, mockBanners, mockUser } from "./mockData";
+import { mockProducts, mockBanners, mockUser, mockOrders } from "./mockData";
 
 interface AppState {
   // Global Setup
   role: Role;
   setRole: (role: Role) => void;
+  designConcept: "artisanal" | "nordic" | "tokyo";
+  setDesignConcept: (concept: "artisanal" | "nordic" | "tokyo") => void;
+  isStoreOpen: boolean;
+  toggleStoreOpen: () => void;
+  isAudioAlertEnabled: boolean;
+  toggleAudioAlert: () => void;
   
   // Data
   products: Product[];
@@ -29,7 +35,10 @@ interface AppState {
   placeOrder: (orderData: Omit<Order, "id" | "createdAt" | "status">) => Order;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
 
-  // Admin Actions
+  // Admin Operational & KDS Actions
+  updateProductStock: (productId: string, remainingPortion: number) => void;
+  toggleProductAvailability: (productId: string) => void;
+  updateProductPrice: (productId: string, price: number) => void;
   addProduct: (product: Omit<Product, "id">) => void;
   updateProduct: (productId: string, data: Partial<Product>) => void;
   deleteProduct: (productId: string) => void;
@@ -39,6 +48,7 @@ interface AppState {
   updateBanner: (bannerId: string, data: Partial<Banner>) => void;
   toggleBannerStatus: (bannerId: string) => void;
   deleteBanner: (bannerId: string) => void;
+  resetProductsToDefault: () => void;
 }
 
 export const useStore = create<AppState>()(
@@ -47,6 +57,12 @@ export const useStore = create<AppState>()(
       // Global Setup
       role: "customer",
       setRole: (role) => set({ role }),
+      designConcept: "artisanal",
+      setDesignConcept: (designConcept) => set({ designConcept }),
+      isStoreOpen: true,
+      toggleStoreOpen: () => set((state) => ({ isStoreOpen: !state.isStoreOpen })),
+      isAudioAlertEnabled: true,
+      toggleAudioAlert: () => set((state) => ({ isAudioAlertEnabled: !state.isAudioAlertEnabled })),
 
       // Initial Data Setup
       products: mockProducts,
@@ -54,7 +70,7 @@ export const useStore = create<AppState>()(
       user: mockUser,
       cart: [],
       wishlist: [],
-      orders: [],
+      orders: mockOrders,
 
       // Cart Actions
       addToCart: (product, quantity, notes) => set((state) => {
@@ -119,6 +135,31 @@ export const useStore = create<AppState>()(
         orders: state.orders.map(o => o.id === orderId ? { ...o, status } : o)
       })),
 
+      // Admin Operational & KDS Actions
+      updateProductStock: (productId, remainingPortion) => set((state) => ({
+        products: state.products.map(p =>
+          p.id === productId
+            ? { ...p, remainingPortion, stock: remainingPortion, isActive: remainingPortion > 0 }
+            : p
+        )
+      })),
+
+      toggleProductAvailability: (productId) => set((state) => ({
+        products: state.products.map(p =>
+          p.id === productId
+            ? { ...p, isActive: !p.isActive }
+            : p
+        )
+      })),
+
+      updateProductPrice: (productId, price) => set((state) => ({
+        products: state.products.map(p =>
+          p.id === productId
+            ? { ...p, price }
+            : p
+        )
+      })),
+
       // Admin Actions
       addProduct: (productData) => set((state) => ({
         products: [...state.products, { ...productData, id: `p${Date.now()}` }]
@@ -144,12 +185,35 @@ export const useStore = create<AppState>()(
       })),
       deleteBanner: (bannerId) => set((state) => ({
         banners: state.banners.filter(b => b.id !== bannerId)
-      }))
+      })),
+
+      resetProductsToDefault: () => set({
+        products: mockProducts,
+        banners: mockBanners,
+      }),
     }),
     {
-      name: "dapur-ola-storage",
+      name: "dapur-ola-storage-v10",
       storage: createJSONStorage(() => localStorage),
-      version: 1,
+      version: 10,
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          const imgSet = new Set(state.products.map((p) => p.image));
+          const hasDuplicates = imgSet.size !== state.products.length;
+          const isLegacy =
+            state.products.length < mockProducts.length ||
+            state.products.some(
+              (p) =>
+                p.name.toLowerCase().includes("tes") ||
+                p.name.toLowerCase().includes("fluffy")
+            );
+
+          if (hasDuplicates || isLegacy) {
+            state.products = mockProducts;
+            state.banners = mockBanners;
+          }
+        }
+      },
     }
   )
 );

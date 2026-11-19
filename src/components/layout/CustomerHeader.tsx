@@ -1,167 +1,167 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Search, ShoppingBag, Heart, User, Menu, X } from "lucide-react";
+import { ShoppingBag, Search, X } from "lucide-react";
 import { useStore } from "@/store/useStore";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
-
-const NAV_LINKS = [
-  { href: "/products", label: "Menu Kami" },
-  { href: "/orders", label: "Lacak Pesanan" },
-];
+import CartDrawer from "@/components/cart/CartDrawer";
+import { useRouter } from "next/navigation";
 
 export default function CustomerHeader() {
-  const pathname = usePathname();
   const router = useRouter();
-  const { cart, wishlist } = useStore();
+  const { cart, isStoreOpen, designConcept } = useStore();
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartSubtotal = cart.reduce((total, item) => total + item.product.price * item.quantity, 0);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/products?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/?q=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
-      setSearchQuery("");
     }
   };
 
+  // Dynamic Theme Styling based on selected client concept
+  const isArtisanal = designConcept === "artisanal" || !designConcept;
+  const isNordic = designConcept === "nordic";
+
+  const headerBg = isArtisanal
+    ? "bg-[#FAF7F2]/95 border-[#EFE8DD] text-[#1B4332]"
+    : isNordic
+    ? "bg-white/95 border-neutral-200 text-neutral-900"
+    : "bg-[#F2F8F4]/95 border-[#D4E5DC] text-[#073524]";
+
+  const buttonRadius = isArtisanal
+    ? "rounded-full"
+    : isNordic
+    ? "rounded-xl"
+    : "rounded-2xl";
+
+  const primaryBtnBg = isArtisanal
+    ? "bg-[#1B4332] hover:bg-[#143225] text-white shadow-sm"
+    : isNordic
+    ? "bg-neutral-900 hover:bg-black text-white shadow-xs"
+    : "bg-[#00A65E] hover:bg-[#008F50] text-white shadow-xs";
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/40 relative">
-      {isSearchOpen && (
-        <div className="absolute inset-0 z-50 bg-background/95 backdrop-blur-md flex items-center px-4 md:px-8 shadow-sm">
-          <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2 max-w-3xl mx-auto h-full">
-            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
-            <input 
-              type="text" 
-              placeholder="Cari bolu, brownies, hampers..." 
-              className="flex-1 bg-transparent border-none outline-none text-base sm:text-lg px-2 h-full placeholder:text-muted-foreground/60"
-              autoFocus
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button type="button" variant="ghost" size="icon" className="shrink-0" onClick={() => setIsSearchOpen(false)}>
-              <X className="h-5 w-5" />
-            </Button>
-          </form>
-        </div>
-      )}
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Mobile Menu */}
-        <Sheet>
-          <SheetTrigger className="lg:hidden" render={
-            <Button variant="ghost" size="icon" className="-ml-2">
-              <Menu className="h-5 w-5" />
-            </Button>
-          } />
-          <SheetContent side="left" className="w-[85%] max-w-[320px] p-6">
-            <SheetTitle className="text-left flex flex-col mb-6 border-b pb-4">
-              <span className="font-heading text-2xl text-primary">DAPUR OLA</span>
-              <span className="text-xs font-medium text-muted-foreground tracking-wide mt-0.5">HAPPINESS IS HOMEMADE</span>
-            </SheetTitle>
-            <nav className="flex flex-col gap-6 mt-4">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "text-lg font-medium transition-colors hover:text-primary",
-                    pathname === link.href ? "text-primary" : "text-muted-foreground"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link 
-                href="/wishlist" 
-                className={cn(
-                  "text-lg font-medium transition-colors hover:text-primary flex items-center justify-between", 
-                  pathname === "/wishlist" ? "text-primary" : "text-muted-foreground"
-                )}
+    <>
+      <header className={`sticky top-0 z-40 w-full backdrop-blur-md border-b shadow-xs transition-colors duration-200 ${headerBg}`}>
+        {/* Full-width Search Bar */}
+        {isSearchOpen && (
+          <div className="absolute inset-0 z-50 bg-white/98 border-b border-stone-200 flex items-center px-4 md:px-8">
+            <form onSubmit={handleSearch} className="flex-1 flex items-center gap-3 max-w-4xl mx-auto h-full">
+              <Search className="w-5 h-5 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Cari bolu gulung, brownies fudgy, donat kampung, hampers..."
+                className="flex-1 bg-transparent border-none outline-none font-jakarta text-base sm:text-lg placeholder:text-stone-400 text-stone-900"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(false)}
+                className="p-2 text-stone-400 hover:text-stone-700 transition-colors cursor-pointer"
+                aria-label="Tutup pencarian"
               >
-                <span>Menu Favorit</span>
-                {wishlist.length > 0 && (
-                  <span className="bg-destructive text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {wishlist.length}
-                  </span>
-                )}
-              </Link>
-              <Link 
-                href="/profile" 
-                className={cn(
-                  "text-lg font-medium transition-colors hover:text-primary", 
-                  pathname === "/profile" ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                Profil Saya
-              </Link>
-            </nav>
-          </SheetContent>
-        </Sheet>
+                <X strokeWidth={2} className="w-5 h-5" />
+              </button>
+            </form>
+          </div>
+        )}
 
-        {/* Logo */}
-        <Link href="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:transform-none flex flex-col items-center lg:items-start justify-center">
-          <span className="font-heading font-semibold text-2xl text-primary tracking-tight leading-none">
-            DAPUR OLA
-          </span>
-          <span className="text-[10px] font-medium text-muted-foreground tracking-widest mt-1">
-            HAPPINESS IS HOMEMADE
-          </span>
-        </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === link.href ? "text-primary" : "text-muted-foreground"
-              )}
+        <div className="container mx-auto px-4 md:px-8 h-16 sm:h-20 flex items-center justify-between">
+          {/* Brand Name on the Left */}
+          <Link href="/" className="flex flex-col group py-1">
+            <span
+              className={`leading-tight transition-colors ${
+                isArtisanal
+                  ? "font-playfair text-2xl sm:text-[30px] font-bold text-[#1B4332] group-hover:text-amber-800"
+                  : isNordic
+                  ? "font-jakarta text-2xl sm:text-[28px] font-black tracking-tight text-neutral-900 group-hover:text-emerald-700"
+                  : "font-cinzel text-2xl sm:text-[28px] font-bold tracking-[0.12em] text-[#073524] group-hover:text-[#00A65E]"
+              }`}
             >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+              DAPUR OLA
+            </span>
+            <span
+              className={`text-[9px] uppercase tracking-[0.25em] font-semibold -mt-0.5 ${
+                isArtisanal
+                  ? "font-jakarta text-amber-700"
+                  : isNordic
+                  ? "font-jakarta text-neutral-400 tracking-widest"
+                  : "font-sans text-[#00A65E]"
+              }`}
+            >
+              {isArtisanal ? "ARTISANAL PATISSERIE & BAKERY" : isNordic ? "COPENHAGEN & JAKARTA COMMISSARY" : "HAPPINESS IS HOMEMADE"}
+            </span>
+          </Link>
 
-        {/* Actions */}
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-primary" onClick={() => setIsSearchOpen(true)}>
-            <Search className="h-5 w-5" />
-          </Button>
-          <Link href="/wishlist" className="hidden sm:inline-flex">
-            <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-primary">
-              <Heart className="h-5 w-5" />
-              {wishlist.length > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-              )}
-            </Button>
-          </Link>
-          <Link href="/profile" className="hidden sm:inline-flex">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-              <User className="h-5 w-5" />
-            </Button>
-          </Link>
-          <Link href="/cart">
-            <Button variant="ghost" size="icon" className="relative text-primary">
-              <ShoppingBag className="h-5 w-5" />
-              {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                  {cartItemsCount}
+          {/* Kitchen Pulse Badge in Center */}
+          <div
+            className={`hidden md:flex items-center gap-2.5 px-4 py-1.5 text-xs font-jakarta ${buttonRadius} ${
+              isArtisanal
+                ? "bg-[#EAF2EC] border border-[#D2E4DA] text-[#1B4332]"
+                : isNordic
+                ? "bg-neutral-100 border border-neutral-200 text-neutral-700"
+                : "bg-[#EAF5EF] border border-[#BDE0CD] text-[#073524]"
+            }`}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+            </span>
+            <span className="font-semibold">
+              {isStoreOpen ? "Dapur Buka • Fresh Keluar Oven" : "Dapur Istirahat"}
+            </span>
+            <span className="opacity-40">|</span>
+            <span className="opacity-80">Jakarta Selatan</span>
+          </div>
+
+          {/* Actions on the Right */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className={`p-2.5 transition-colors cursor-pointer border ${buttonRadius} ${
+                isArtisanal
+                  ? "bg-white hover:bg-stone-50 border-stone-200 text-stone-700"
+                  : isNordic
+                  ? "bg-white hover:bg-neutral-100 border-neutral-200 text-neutral-800"
+                  : "bg-white hover:bg-[#00A65E] hover:text-white border-[#D4E5DC] text-[#073524]"
+              }`}
+              aria-label="Buka pencarian"
+            >
+              <Search strokeWidth={1.75} className="w-4 h-4" />
+            </button>
+
+            {/* Bag Trigger */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className={`flex items-center gap-2 px-4 py-2.5 transition-all cursor-pointer font-jakarta text-xs font-semibold ${buttonRadius} ${primaryBtnBg} active:scale-95`}
+              aria-label="Buka keranjang"
+            >
+              <ShoppingBag strokeWidth={2} className="w-4 h-4" />
+              <span className="hidden sm:inline">Keranjang</span>
+              <span className="bg-white/20 text-white font-bold px-1.5 py-0.5 rounded-full text-[11px]">
+                {cartItemsCount}
+              </span>
+              {cartSubtotal > 0 && (
+                <span className="hidden lg:inline text-white/90 font-medium pl-0.5">
+                  • Rp {cartSubtotal.toLocaleString("id-ID")}
                 </span>
               )}
-            </Button>
-          </Link>
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Slide-over Cart Drawer */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </>
   );
 }

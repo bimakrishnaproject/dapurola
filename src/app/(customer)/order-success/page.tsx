@@ -3,39 +3,99 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-import { CheckCircle2, Package, ArrowRight } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Check, ArrowRight } from "lucide-react";
+import { useStore } from "@/store/useStore";
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("id");
+  const { designConcept } = useStore();
+  const isArtisanal = designConcept === "artisanal" || !designConcept;
 
   return (
-    <div className="max-w-md mx-auto text-center">
-      <div className="w-24 h-24 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-8 relative">
-        <div className="absolute inset-0 bg-brand-light animate-ping rounded-full opacity-50" />
-        <CheckCircle2 className="w-12 h-12 text-brand-primary relative z-10" />
-      </div>
-      
-      <h1 className="text-3xl md:text-4xl font-heading font-semibold text-brand-primary mb-4">
-        Yeay! Pesananmu Udah Masuk 🎉
-      </h1>
-      
-      <p className="text-lg text-muted-foreground mb-8">
-        Terima kasih sudah memesan di Dapur Ola. Pesananmu lagi kami siapkan dengan penuh cinta 🥰.
-      </p>
-
-      <div className="bg-white border border-brand-beige rounded-2xl p-6 mb-8 text-left shadow-sm">
-        <p className="text-sm text-muted-foreground mb-1">Nomor Pesanan</p>
-        <p className="font-heading font-semibold text-lg text-foreground">{orderId || "ORD-XXXX"}</p>
+    <div
+      className={`max-w-xl mx-auto p-5 sm:p-10 text-left transition-all ${
+        isArtisanal
+          ? "bg-white sm:rounded-3xl border border-stone-200/80 shadow-md text-stone-900"
+          : "bg-white sm:rounded-2xl border border-neutral-200 shadow-sm text-neutral-900"
+      }`}
+    >
+      <div className="flex items-center justify-between pb-4 border-b border-stone-100 text-xs">
+        <span className="font-semibold text-emerald-700 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Status: Pesanan Diterima
+        </span>
+        <span className="text-stone-400">Dapur Ola Jakarta</span>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-        <Link href={orderId ? `/orders/${orderId}` : "/orders"} className={buttonVariants({ size: "lg", className: "rounded-full w-full sm:w-auto h-14 px-8" })}>
-          Lacak Pesanan <Package className="w-5 h-5 ml-2" />
+      <div className="my-6 sm:my-8">
+        <div
+          className={`w-12 h-12 rounded-full flex items-center justify-center mb-5 ${
+            isArtisanal ? "bg-[#1B4332] text-white" : "bg-neutral-900 text-white"
+          }`}
+        >
+          <Check strokeWidth={2.5} className="w-6 h-6" />
+        </div>
+
+        <span className="text-xs uppercase tracking-wider text-amber-800 font-semibold block mb-1">
+          Dapur Sedang Menyiapkan • Fresh Oven
+        </span>
+
+        <h1
+          className={`text-2xl sm:text-3xl font-bold mb-2.5 leading-tight ${
+            isArtisanal ? "font-playfair text-[#1B4332]" : "text-neutral-900"
+          }`}
+        >
+          Pesananmu Berhasil Diterima!
+        </h1>
+
+        <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-normal">
+          Terima kasih telah berbelanja di Dapur Ola! Pesanan Anda segera disiapkan secara higienis oleh tim baker kami dan dipacking rapi dalam boks hijau eksklusif.
+        </p>
+      </div>
+
+      <div
+        className={`p-4 sm:p-5 rounded-2xl text-xs space-y-2 mb-6 ${
+          isArtisanal
+            ? "bg-[#FAF7F2] border border-[#EAE2D5]"
+            : "bg-neutral-50 border border-neutral-200"
+        }`}
+      >
+        <div className="flex justify-between">
+          <span className="text-stone-500">Nomor Pesanan</span>
+          <span className="font-bold text-stone-900">#{orderId || "DAPUR-OLA"}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-stone-500">Dapur Pengirim</span>
+          <span className="text-stone-900">Gandaria Tengah III, Jaksel</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-stone-500">Standar Kemasan</span>
+          <span className="font-semibold text-emerald-700">Boks Hijau Ikonik + Segel Higienis</span>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+        <Link
+          href={orderId ? `/orders/${orderId}` : "/orders"}
+          className={`flex-1 py-3 px-5 text-center text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer ${
+            isArtisanal
+              ? "rounded-full bg-[#1B4332] hover:bg-[#143225] text-white"
+              : "rounded-xl bg-neutral-900 hover:bg-black text-white"
+          }`}
+        >
+          <span>Pantau Status Pesanan</span>
+          <ArrowRight strokeWidth={2} className="w-3.5 h-3.5" />
         </Link>
-        <Link href="/" className={buttonVariants({ variant: "outline", size: "lg", className: "rounded-full w-full sm:w-auto h-14 px-8" })}>
-          Kembali ke Beranda
+        <Link
+          href="/#menu-list"
+          className={`py-3 px-6 text-center text-xs font-semibold border transition-colors ${
+            isArtisanal
+              ? "rounded-full bg-white hover:bg-stone-50 text-stone-700 border-stone-200"
+              : "rounded-xl bg-white hover:bg-neutral-50 text-neutral-700 border-neutral-300"
+          }`}
+        >
+          Pilih Menu Lain
         </Link>
       </div>
     </div>
@@ -44,8 +104,8 @@ function OrderSuccessContent() {
 
 export default function OrderSuccessPage() {
   return (
-    <div className="container mx-auto px-4 py-24 flex items-center justify-center min-h-[70vh]">
-      <Suspense fallback={<div className="animate-pulse w-24 h-24 bg-brand-light rounded-full mx-auto" />}>
+    <div className="container mx-auto px-3 sm:px-6 md:px-8 py-16 sm:py-24 min-h-[75vh] flex items-center justify-center font-jakarta">
+      <Suspense fallback={<div className="text-xs font-medium text-stone-400">Memverifikasi pesanan...</div>}>
         <OrderSuccessContent />
       </Suspense>
     </div>
